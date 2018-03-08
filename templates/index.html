@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    {{ codemirror.include_codemirror() }}
+    {% assets "home_js" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+</head>
+<body>
+    <form method="POST">
+        {{ form.source_code }}
+        <input type="submit" value="OK">
+    </form>
+</body>
+</html>
