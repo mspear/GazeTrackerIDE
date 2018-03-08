@@ -13,5 +13,11 @@
         {{ form.source_code }}
         <input type="submit" value="OK">
     </form>
+    <br />
+    <div style="background: lightgray; width: 50%; height: 20px">
+        {% for line in postback %}
+            {{ line }}
+        {% endfor %}
+    </div>
 </body>
 </html>
