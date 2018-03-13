@@ -43,7 +43,6 @@ def index():
     def inner():
         proc = subprocess.Popen(
             ['python', '-c', text],
-            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
