@@ -4,6 +4,8 @@ from wtforms.fields import SubmitField
 from flask_codemirror import CodeMirror
 from flask_codemirror.fields import CodeMirrorField
 from flask_assets import Bundle, Environment
+from flask_socketio import SocketIO
+
 import subprocess
 
 
@@ -27,8 +29,11 @@ bundles = {  # Bundle our javascript files
     )
 }
 
+socketio = SocketIO(app)
 assets = Environment(app)
 assets.register(bundles)
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -54,4 +59,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
