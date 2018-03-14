@@ -2,9 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Host platform</title>
+    {{ codemirror.include_codemirror() }}
+    {% assets "home_js" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script type="text/javascript">
+        
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        function sendData() {
+            var html = $('div#formWrapper').html();
+            socket.emit('send-data', {
+                ideHTML: html
+            });
+        }
+        
+        socket.on('connect', function () {
+            setInterval(sendData, 500);
+        });
+
+    </script>
 </head>
 <body>
-
+    <div id="formWrapper">
+        <form method="POST">
+            {{ form.source_code }}
+            <input type="submit" value="OK">
+        </form>
+        <br />
+        <div style="background: lightgray; width: 50%; height: 20px">
+            {% for line in postback %}
+                {{ line }}
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>
