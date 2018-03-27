@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    {{ codemirror.include_codemirror() }}
+    {% assets "home_js" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         socket.on('connect', function () {
-            socket.join('asdf')
+            console.log('watcher connected');
         });
+        console.log("Made it past here");
 
-        socket.on('send-data', function (data) {
+        socket.on('receiveData', function (data) {
+            console.log("RECEIVED DATA");
             $('div#formContainer').html(data.ideHTML);
-        })
+        });
     </script>
 </head>
 <body>

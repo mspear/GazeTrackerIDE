@@ -4,7 +4,7 @@ from wtforms.fields import SubmitField
 from flask_codemirror import CodeMirror
 from flask_codemirror.fields import CodeMirrorField
 from flask_assets import Bundle, Environment
-from flask_socketio import SocketIO, join_room, send
+from flask_socketio import SocketIO, emit
 
 import subprocess
 
@@ -35,12 +35,10 @@ socketio = SocketIO(app)
 assets = Environment(app)
 assets.register(bundles)
 
-
-@socketio.on('join')
-def on_join(data):
-    room = data['room']
-    join_room(room)
-    print("someone joined!")
+@socketio.on('sendData')
+def f(data):
+    print("Got data")
+    emit('receiveData', data, broadcast=True)
 
 
 def exec_code(code):
@@ -83,4 +81,4 @@ def index():
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=5000)

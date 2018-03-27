@@ -9,19 +9,30 @@
     {% endassets %}
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
-        
+        window.alert = function () {};
         var socket = io.connect('http://' + document.domain + ':' + location.port);
-        
         function sendData() {
+            console.log('sending data');
             var html = $('div#formWrapper').html();
-            socket.emit('send-data', {
-                ideHTML: html
+            socket.emit('sendData', {
+                ideHTML: html,
+                from: socket.io.engine.id
             });
         }
-        
+
+
         socket.on('connect', function () {
-            setInterval(sendData, 500);
+            setInterval(sendData, 1000);
         });
+
+        /*socket.on('receiveData', function (data) {
+            if (data.from != socket.io.engine.id) {
+                console.log('Got Stranger data! Yay');
+                var $wrapper = $('div#formWrapper');
+                $wrapper.empty();
+                $wrapper.html(data.ideHTML);
+            }
+        })*/
 
     </script>
 </head>
