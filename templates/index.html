@@ -7,17 +7,18 @@
     {% assets "home_js" %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}" />
     <script type="text/javascript">
         var myCodeMirror;
         $(document).ready(function () {
             myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
-                                lineNumbers: true,
-                                mode: 'python'
-                            });
+                lineNumbers: true,
+                mode: 'python'
+            });
         });
         function postBack() {
             $.post('ajax/runCode', {data: myCodeMirror.getValue()}, function (data) {
-                $('#result').html(data);
+                $('#result').text(data);
             });
         }
     </script>

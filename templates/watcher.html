@@ -7,6 +7,7 @@
     {% assets "home_js" %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
         var myCodeMirror;
@@ -32,7 +33,7 @@
             console.log(data.yPosition);
             myCodeMirror.setValue(data.code);
             myCodeMirror.scrollIntoView(data.scrollPosition.left, data.scrollPosition.top);
-            $('#result').html(data.result);
+            $('#result').text(data.result);
         });
     </script>
 </head>

@@ -7,6 +7,7 @@
     {% assets "home_js" %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
         var myCodeMirror;
@@ -32,7 +33,7 @@
             socket.emit('sendDataHost', {
                 code: data,
                 scrollPosition: myCodeMirror.getScrollInfo(),
-                result: $('#result').html()
+                result: $('#result').text();
             });
         }
 

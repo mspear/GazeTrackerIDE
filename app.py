@@ -1,19 +1,9 @@
 from flask import Flask, render_template, request
-from wtforms import Form
-from wtforms.fields import SubmitField
 from flask_codemirror import CodeMirror
-from flask_codemirror.fields import CodeMirrorField
 from flask_assets import Bundle, Environment
 from flask_socketio import SocketIO, emit
 
 import subprocess
-
-
-class MyForm(Form):
-    source_code = CodeMirrorField(language='python', config={'lineNumbers': True})
-    submit = SubmitField('Submit')
-
-
 
 
 CODEMIRROR_LANGUAGES = ['python', 'html']
@@ -24,8 +14,8 @@ app.config.from_object(__name__)
 codemirror = CodeMirror(app)
 bundles = {  # Bundle our javascript files
     'home_js': Bundle(
-        'webgazer.js',
-        'jquery-3.3.1.js',
+        'js/webgazer.js',
+        'js/jquery-3.3.1.js',
         output='gen/home.js',
         filters='jsmin',
     )
@@ -52,7 +42,7 @@ def exec_code(code):
     )
     acc = ''
     for line in iter(proc.stdout.readline, b''):
-        acc += line.decode().rstrip() + '<br>'
+        acc += line.decode()
     return acc
 
 @app.route('/ajax/runCode', methods=['POST'])
