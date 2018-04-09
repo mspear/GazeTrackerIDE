@@ -9,19 +9,36 @@
     {% endassets %}
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
+        var myCodeMirror;
+        $(document).ready(function () {
+            myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
+                lineNumbers: true,
+                mode: 'python',
+                readOnly: true
+            });
+        });
+    </script>
+    <script type="text/javascript">
+
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         socket.on('connect', function () {
             console.log('watcher connected');
+            /*setInterval(function () {
+                socket.emit('sendDataWatcher', { yPosition: webgazer.getCurrentPrediction().y || -1})
+            })*/
         });
-        console.log("Made it past here");
 
-        socket.on('receiveData', function (data) {
-            console.log("RECEIVED DATA");
-            $('div#formContainer').html(data.ideHTML);
+        socket.on('receiveDataHost', function (data) {
+            console.log(data.yPosition);
+            myCodeMirror.setValue(data.code);
+            myCodeMirror.scrollIntoView(data.scrollPosition.left, data.scrollPosition.top);
+            $('#result').html(data.result);
         });
     </script>
 </head>
 <body>
-    <div id="formContainer"></div>
+    <textarea id="codemirror"></textarea>
+    <br />
+    <div id="result"></div>
 </body>
 </html>

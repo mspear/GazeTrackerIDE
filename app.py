@@ -35,10 +35,13 @@ socketio = SocketIO(app)
 assets = Environment(app)
 assets.register(bundles)
 
-@socketio.on('sendData')
-def f(data):
-    print("Got data")
-    emit('receiveData', data, broadcast=True)
+@socketio.on('sendDataHost')
+def hostReflect(data):
+    emit('receiveDataHost', data, broadcast=True)
+
+@socketio.on('sendDataWatcher')
+def watcherReflect(data):
+    emit('receiveDataWatcher', data, broadcast=True)
 
 
 def exec_code(code):
@@ -47,20 +50,20 @@ def exec_code(code):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-
+    acc = ''
     for line in iter(proc.stdout.readline, b''):
-        yield line.decode().rstrip() + '\n'
+        acc += line.decode().rstrip() + '<br>'
+    return acc
+
+@app.route('/ajax/runCode', methods=['POST'])
+def runcode():
+    result = exec_code(request.form['data'])
+    return result
 
 
-@app.route('/host', methods=['GET', 'POST'])
+@app.route('/host', methods=['GET'])
 def host():
-    form = MyForm(request.form)
-    if request.method == 'POST' and form.validate():
-        text = form.source_code.data
-    else:
-        text = ''
-
-    return render_template('host.html', form=form, postback=exec_code(text) if text else '')
+    return render_template('host.html')
 
 
 @app.route('/watcher', methods=['GET'])
@@ -68,16 +71,10 @@ def watch():
     return render_template('watcher.html')
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
-    form = MyForm(request.form)
-    if request.method == 'POST' and form.validate():
-        text = form.source_code.data
-    else:
-        text = ''
-
-    return render_template('index.html', form=form, postback=exec_code(text) if text else '')
+    return render_template('index.html')
 
 
 if __name__ == '__main__':

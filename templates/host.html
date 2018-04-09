@@ -9,45 +9,48 @@
     {% endassets %}
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script type="text/javascript">
-        window.alert = function () {};
+        var myCodeMirror;
+
+        $(document).ready(function () {
+            myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
+                lineNumbers: true,
+                mode: 'python'
+            });
+        });
+
+        function postBack() {
+            $.post('ajax/runCode', {data: myCodeMirror.getValue()}, function (data) {
+                $('#result').html(data);
+            });
+        }
+    </script>
+    <script type="text/javascript">
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         function sendData() {
             console.log('sending data');
-            var html = $('div#formWrapper').html();
-            socket.emit('sendData', {
-                ideHTML: html,
-                from: socket.io.engine.id
+            var data = myCodeMirror.getValue();
+            socket.emit('sendDataHost', {
+                code: data,
+                scrollPosition: myCodeMirror.getScrollInfo(),
+                result: $('#result').html()
             });
         }
 
 
         socket.on('connect', function () {
-            setInterval(sendData, 1000);
+            setInterval(sendData, 500);
         });
 
-        /*socket.on('receiveData', function (data) {
-            if (data.from != socket.io.engine.id) {
-                console.log('Got Stranger data! Yay');
-                var $wrapper = $('div#formWrapper');
-                $wrapper.empty();
-                $wrapper.html(data.ideHTML);
-            }
-        })*/
+        socket.on('receiveDataWatcher', function (data) {
+            console.log(data.yPosition);
+        });
 
     </script>
 </head>
 <body>
-    <div id="formWrapper">
-        <form method="POST">
-            {{ form.source_code }}
-            <input type="submit" value="OK">
-        </form>
-        <br />
-        <div style="background: lightgray; width: 50%; height: 20px">
-            {% for line in postback %}
-                {{ line }}
-            {% endfor %}
-        </div>
-    </div>
+    <textarea id="codemirror"></textarea>
+    <input type="button" onclick="postBack()" value="Run Code">
+    <br />
+    <div id="result"></div>
 </body>
 </html>

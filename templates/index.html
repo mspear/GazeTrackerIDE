@@ -7,17 +7,25 @@
     {% assets "home_js" %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    <script type="text/javascript">
+        var myCodeMirror;
+        $(document).ready(function () {
+            myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
+                                lineNumbers: true,
+                                mode: 'python'
+                            });
+        });
+        function postBack() {
+            $.post('ajax/runCode', {data: myCodeMirror.getValue()}, function (data) {
+                $('#result').html(data);
+            });
+        }
+    </script>
 </head>
 <body>
-    <form method="POST">
-        {{ form.source_code }}
-        <input type="submit" value="OK">
-    </form>
+    <textarea id="codemirror"></textarea>
+    <input type="button" onclick="postBack()" value="Run Code">
     <br />
-    <div style="background: lightgray; width: 50%; height: 20px">
-        {% for line in postback %}
-            {{ line }}
-        {% endfor %}
-    </div>
+    <div id="result"></div>
 </body>
 </html>
