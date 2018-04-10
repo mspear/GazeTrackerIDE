@@ -30,9 +30,8 @@
         });
 
         socket.on('receiveDataHost', function (data) {
-            console.log(data.yPosition);
             myCodeMirror.setValue(data.code);
-            myCodeMirror.scrollIntoView(data.scrollPosition.left, data.scrollPosition.top);
+            myCodeMirror.scrollTo(data.scrollPosition.left, data.scrollPosition.top);
             $('#result').text(data.result);
         });
     </script>
