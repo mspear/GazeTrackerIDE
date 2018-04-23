@@ -12,11 +12,25 @@
     <script type="text/javascript">
         var myCodeMirror;
 
+        var currentx = [];
+        var currenty = [];
+        webgazer.setGazeListener(function (data) {
+            if (data == null) {
+                console.log("no eye data")
+                return;
+            }
+            currentx.push(data.x);
+            currenty.push(data.y);
+        }).begin();
+
         $(document).ready(function () {
             myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
                 lineNumbers: true,
-                mode: 'python'
-            });
+                mode: 'python',
+                styleSelectedText: true,
+                gutters: ["CodeMirror-linenumbers", "breakpoints"]
+            })
+            myCodeMirror.setValue("print(\"lol\")\na=5\nb=4\nprint(a+b)");    /// this is where I "load" the program into the editor
         });
 
         function postBack() {
@@ -26,14 +40,23 @@
         }
     </script>
     <script type="text/javascript">
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var socket = io.connect('https://' + document.domain + ':' + location.port);
         function sendData() {
             console.log('sending data');
+            console.log(currenty);
+            var avg = 0;
+            for (var i=0; i<currenty.length; i++) {
+                avg += currenty[i];
+            }
+            avg /= currenty.length;
+            currenty = [];
+
             var data = myCodeMirror.getValue();
             socket.emit('sendDataHost', {
                 code: data,
                 scrollPosition: myCodeMirror.getScrollInfo(),
-                result: $('#result').text()
+                result: $('#result').text(),
+                ypos: Math.round(avg)
             });
         }
 
@@ -42,8 +65,40 @@
             setInterval(sendData, 500);
         });
 
+        var previousYPos; // use this later cuz don't wanna clear gutters if its the same 5 lines to be "guttered"
         socket.on('receiveDataWatcher', function (data) {
-            console.log(data.yPosition);
+            console.log("receiving data");
+            console.log(data.ypos);
+
+            if (previousYPos != data.ypos) {    // this is so gutters aren't cleared if its the same position
+                var lineNum = myCodeMirror.lineAtHeight(data.ypos) - 1; // pretty sure codeMirror starts at 0
+                var info = myCodeMirror.lineInfo(lineNum);
+
+                myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+
+                if (lineNum < 2) {
+                    for (var x = 1; x <= 5; x++) {
+                        myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    }
+                }
+                else {
+
+                    myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+
+                }
+
+                function makeMarker() {
+                    var marker = document.createElement("div");
+                    marker.style.color = "#dedb1a";
+                    marker.innerHTML = "▌";
+                    return marker;
+                }
+                previousYPos = data.ypos;
+            }
         });
 
     </script>

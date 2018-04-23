@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request
-from flask_codemirror import CodeMirror
-from flask_assets import Bundle, Environment
-from flask_socketio import SocketIO, emit
-
 import subprocess
 
+from flask import Flask, render_template, request
+from flask_assets import Bundle, Environment
+from flask_codemirror import CodeMirror
+from flask_socketio import SocketIO, emit
 
 CODEMIRROR_LANGUAGES = ['python', 'html']
 
@@ -68,4 +67,4 @@ def index():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5000,  keyfile='key.pem', certfile='cert.pem')

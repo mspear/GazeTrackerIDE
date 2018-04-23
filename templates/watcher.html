@@ -15,24 +15,88 @@
             myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
                 lineNumbers: true,
                 mode: 'python',
-                readOnly: true
+                readOnly: true,
+                gutters: ["CodeMirror-linenumbers", "breakpoints"]
             });
+
         });
     </script>
     <script type="text/javascript">
 
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var currentx = [];
+        var currenty = [];
+        webgazer.setGazeListener(function (data) {
+            if (data == null) {
+                console.log("no eye data");
+                return;
+
+            }
+            currentx.push(data.x);
+            currenty.push(data.y);
+        }).begin();
+
+
+
+        var socket = io.connect('https://' + document.domain + ':' + location.port);
+        function sendData() {
+            console.log('sending data');
+            console.log(currenty);
+            var avg = 0;
+            for (var i=0; i<currenty.length; i++) {
+                avg += currenty[i];
+            }
+            avg /= currenty.length;
+            currenty = [];
+            //var data = myCodeMirror.getValue();
+            socket.emit('sendDataWatcher', {
+                //code: data,
+                //scrollPosition: myCodeMirror.getScrollInfo(),
+                //result: $('#result').text(),
+                //ypos: webgazer.getCurrentPrediction().y
+                ypos: Math.round(avg)
+            });
+        }
+
+
         socket.on('connect', function () {
             console.log('watcher connected');
-            /*setInterval(function () {
-                socket.emit('sendDataWatcher', { yPosition: webgazer.getCurrentPrediction().y || -1})
-            })*/
+            setInterval(sendData, 500);
+                //sendData
         });
 
         socket.on('receiveDataHost', function (data) {
             myCodeMirror.setValue(data.code);
             myCodeMirror.scrollTo(data.scrollPosition.left, data.scrollPosition.top);
             $('#result').text(data.result);
+            console.log(data.ypos);
+
+            var lineNum = myCodeMirror.lineAtHeight(data.ypos) - 1;
+            var info = myCodeMirror.lineInfo(lineNum);
+
+            myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+
+            if (lineNum < 2){
+                for (var x = 0; x < 5; x++){
+                    myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                }
+            }
+            else {
+
+                myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null :  makeMarker());
+                myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+
+            }
+
+            function makeMarker() {
+              var marker = document.createElement("div");
+              marker.style.color = "#dedb1a";
+              marker.innerHTML = "▌";
+              return marker;
+            }
+
         });
     </script>
 </head>
