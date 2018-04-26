@@ -1,6 +1,6 @@
 import subprocess
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from flask_assets import Bundle, Environment
 from flask_codemirror import CodeMirror
 from flask_socketio import SocketIO, emit
@@ -52,7 +52,15 @@ def runcode():
 
 @app.route('/host', methods=['GET'])
 def host():
-    return render_template('host.html')
+    filename = request.args.get('filename')
+    data = ''
+
+    if filename:
+        import os
+        with open(os.path.join(app.static_folder, f'py/{filename}.py'), 'r') as f:
+            data = f.read()
+    print(data)
+    return render_template('host.html', data=data)
 
 
 @app.route('/watcher', methods=['GET'])

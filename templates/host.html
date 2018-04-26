@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta id="my-data" data-data="{{ data }}">
     <title>Host platform</title>
     {{ codemirror.include_codemirror() }}
     {% assets "home_js" %}
@@ -22,7 +23,6 @@
             currentx.push(data.x);
             currenty.push(data.y);
         }).begin();
-
         $(document).ready(function () {
             myCodeMirror = CodeMirror.fromTextArea($('#codemirror')[0], {
                 lineNumbers: true,
@@ -30,7 +30,9 @@
                 styleSelectedText: true,
                 gutters: ["CodeMirror-linenumbers", "breakpoints"]
             })
-            myCodeMirror.setValue("print(\"lol\")\na=5\nb=4\nprint(a+b)");    /// this is where I "load" the program into the editor
+            console.log($('#my-data').data().data)
+            myCodeMirror.setValue($('#my-data').data().data);
+            //myCodeMirror.setValue("print(\"lol\")\na=5\nb=4\nprint(a+b)");    /// this is where I "load" the program into the editor
         });
 
         function postBack() {
