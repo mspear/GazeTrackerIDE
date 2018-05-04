@@ -53,7 +53,8 @@
                 //scrollPosition: myCodeMirror.getScrollInfo(),
                 //result: $('#result').text(),
                 //ypos: webgazer.getCurrentPrediction().y
-                ypos: Math.round(avg)
+                ypos: Math.round(avg),
+                lineNum: myCodeMirror.lineAtHeight(Math.round(avg)) - 1
             });
         }
 

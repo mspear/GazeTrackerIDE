@@ -1,9 +1,11 @@
 import subprocess
 
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
 from flask_codemirror import CodeMirror
 from flask_socketio import SocketIO, emit
+
+import csv
 
 CODEMIRROR_LANGUAGES = ['python', 'html']
 
@@ -24,14 +26,25 @@ socketio = SocketIO(app)
 assets = Environment(app)
 assets.register(bundles)
 
+import os
+from datetime import datetime
+
+
 @socketio.on('sendDataHost')
 def hostReflect(data):
+    with open(os.path.join(os.path.dirname(__file__), 'temp/tmp.csv'), 'a', newline='\n') as csvfile:
+        fieldnames = ['user', 'line number', 'timestamp']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerow({'user': 'host', 'line number': data['lineNum'], 'timestamp': datetime.now()})
     emit('receiveDataHost', data, broadcast=True)
 
 @socketio.on('sendDataWatcher')
 def watcherReflect(data):
+    with open(os.path.join(os.path.dirname(__file__), 'temp/tmp.csv'), 'a', newline='\n') as csvfile:
+        fieldnames = ['user', 'line number', 'timestamp']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerow({'user': 'watcher', 'line number': data['lineNum'], 'timestamp': datetime.now()})
     emit('receiveDataWatcher', data, broadcast=True)
-
 
 def exec_code(code):
     proc = subprocess.Popen(
@@ -75,4 +88,4 @@ def index():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000,  keyfile='key.pem', certfile='cert.pem')
+        socketio.run(app, host='0.0.0.0', port=5000,  keyfile='key.pem', certfile='cert.pem')
