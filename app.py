@@ -70,9 +70,10 @@ def host():
 
     if filename:
         import os
-        with open(os.path.join(app.static_folder, f'py/{filename}.py'), 'r') as f:
-            data = f.read()
-    print(data)
+        fname=os.path.join(app.static_folder, f'py/{filename}.py')
+        if os.path.exists(fname):
+            with open(fname, 'r') as f:
+                data = f.read()
     return render_template('host.html', data=data)
 
 
