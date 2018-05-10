@@ -74,34 +74,39 @@
             console.log("receiving data");
             console.log(data.ypos);
 
-            if (previousYPos != data.ypos) {    // this is so gutters aren't cleared if its the same position
-                var lineNum = myCodeMirror.lineAtHeight(data.ypos) - 1; // pretty sure codeMirror starts at 0
-                var info = myCodeMirror.lineInfo(lineNum);
+            var highlighting = 1;
 
-                myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+            if(highlighting) {
+                if (previousYPos != data.ypos) {    // this is so gutters aren't cleared if its the same position
+                    var lineNum = data.lineNum; //myCodeMirror.lineAtHeight(data.ypos) - 1; // pretty sure codeMirror starts at 0
+                    var info = myCodeMirror.lineInfo(lineNum);
 
-                if (lineNum < 2) {
-                    for (var x = 1; x <= 5; x++) {
-                        myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+
+                    if (lineNum < 2) {
+                        for (var x = 1; x <= 5; x++) {
+                            myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        }
                     }
-                }
-                else {
+                    else {
 
-                    myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                    myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                    myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                    myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                    myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                        myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
 
-                }
+                    }
 
-                function makeMarker() {
-                    var marker = document.createElement("div");
-                    marker.style.color = "#dedb1a";
-                    marker.innerHTML = "▌";
-                    return marker;
+                    function makeMarker() {
+                        var marker = document.createElement("div");
+                        marker.style.color = "#dedb1a";
+                        marker.innerHTML = "▌";
+                        return marker;
+                    }
+
+                    previousYPos = data.ypos;
                 }
-                previousYPos = data.ypos;
             }
         });
 

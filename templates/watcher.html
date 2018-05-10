@@ -71,33 +71,36 @@
             $('#result').text(data.result);
             console.log(data.ypos);
 
-            var lineNum = myCodeMirror.lineAtHeight(data.ypos) - 1;
+            var lineNum = data.lineNum; //myCodeMirror.lineAtHeight(data.ypos) - 1;
             var info = myCodeMirror.lineInfo(lineNum);
 
-            myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+            var highlighting = 1;
 
-            if (lineNum < 2){
-                for (var x = 0; x < 5; x++){
-                    myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+            if(highlighting) {
+                myCodeMirror.clearGutter("breakpoints");   // clears the previous 5 gutters
+
+                if (lineNum < 2) {
+                    for (var x = 0; x < 5; x++) {
+                        myCodeMirror.setGutterMarker(x, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    }
+                }
+                else {
+
+                    myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
+                    myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
+
+                }
+
+                function makeMarker() {
+                    var marker = document.createElement("div");
+                    marker.style.color = "#dedb1a";
+                    marker.innerHTML = "▌";
+                    return marker;
                 }
             }
-            else {
-
-                myCodeMirror.setGutterMarker(lineNum, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                myCodeMirror.setGutterMarker(lineNum + 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                myCodeMirror.setGutterMarker(lineNum + 1, "breakpoints", info.gutterMarkers ? null :  makeMarker());
-                myCodeMirror.setGutterMarker(lineNum - 1, "breakpoints", info.gutterMarkers ? null : makeMarker());
-                myCodeMirror.setGutterMarker(lineNum - 2, "breakpoints", info.gutterMarkers ? null : makeMarker());
-
-            }
-
-            function makeMarker() {
-              var marker = document.createElement("div");
-              marker.style.color = "#dedb1a";
-              marker.innerHTML = "▌";
-              return marker;
-            }
-
         });
     </script>
 </head>
