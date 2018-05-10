@@ -4,3 +4,4 @@ static/gen/
 venv/
 cert.pem
 key.pem
+temp/
