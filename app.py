@@ -32,7 +32,7 @@ from datetime import datetime
 
 @socketio.on('sendDataHost')
 def hostReflect(data):
-    with open(os.path.join(os.path.dirname(__file__), 'temp/tmp.csv'), 'a', newline='\n') as csvfile:
+    with open(os.path.join(os.path.dirname(__file__), 'temp/temp.csv'), 'a', newline='\n') as csvfile:
         fieldnames = ['user', 'line number', 'timestamp']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writerow({'user': 'host', 'line number': data['lineNum'], 'timestamp': datetime.now()})
@@ -40,7 +40,7 @@ def hostReflect(data):
 
 @socketio.on('sendDataWatcher')
 def watcherReflect(data):
-    with open(os.path.join(os.path.dirname(__file__), 'temp/tmp.csv'), 'a', newline='\n') as csvfile:
+    with open(os.path.join(os.path.dirname(__file__), 'temp/temp.csv'), 'a', newline='\n') as csvfile:
         fieldnames = ['user', 'line number', 'timestamp']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writerow({'user': 'watcher', 'line number': data['lineNum'], 'timestamp': datetime.now()})
