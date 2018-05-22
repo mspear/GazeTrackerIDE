@@ -29,7 +29,7 @@ assets.register(bundles)
 import os
 from datetime import datetime
 
-with open(os.path.join(os.path.dirname(__file__), 'temp/tmp.csv'), 'a', newline='\n') as csvfile:
+with open(os.path.join(os.path.dirname(__file__), 'temp/temp.csv'), 'a', newline='\n') as csvfile:
     fieldnames = ['user', 'line number', 'timestamp']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
